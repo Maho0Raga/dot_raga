@@ -6,7 +6,23 @@
 
 A vibrant, customized dotfiles suite specifically designed for **Omarchy Linux** users. DOT_RAGA brings curated UI/UX, thoughtful defaults, and an animated installer to get your Omarchy desktop looking and feeling sharp — fast.
 
-IMPORTANT: **These dotfiles are strictly for Omarchy Linux.** Using them on other distributions may break configs, window managers, or desktop environments. ⚠️
+> **⚠️ IMPORTANT:** These dotfiles are strictly for **Omarchy Linux**. Using them on other distributions may break configs, window managers, or desktop environments.
+
+---
+
+## 📸 Previews
+
+### 🌌 Desktop & Hyprland
+A seamless visual experience.
+![General Preview](assets/general_preview_1.png)
+
+### 💻 Waybar
+Custom-crafted status bar with a focus on minimalism and vibrant gradients.
+![Waybar Theme](assets/waybar.png)
+
+### 🚀 Fastfetch
+Clean system information display with the unique DOT_RAGA branding.
+![Fastfetch Theme](assets/fastfetch.png)
 
 ---
 
@@ -15,8 +31,7 @@ IMPORTANT: **These dotfiles are strictly for Omarchy Linux.** Using them on othe
 Run this exact command to install:
 
 ```bash
-git clone https://github.com/Maho0Raga/dot_raga.git && cd dot_raga && chmod +x install.sh && ./install.sh
-```
+git clone [https://github.com/Maho0Raga/dot_raga.git](https://github.com/Maho0Raga/dot_raga.git) && cd dot_raga && chmod +x install.sh && ./install.sh
 
 ---
 
