@@ -1,178 +1,253 @@
 #!/bin/bash
 
-# Stop the script if any command fails
-set -e 
+# Disable immediate exit to handle UI gracefully
+set +e 
 
-# Define Paths
+# --- 🎨 VIBRANT COLOR PALETTE ---
+# Bold and Bright
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+YELLOW='\033[1;33m'
+CYAN='\033[1;36m'
+PURPLE='\033[1;35m'
+WHITE='\033[1;37m'
+GREY='\033[0;90m'
+NC='\033[0m' # No Color
+
+# --- ⚙️ CONFIG ---
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="$HOME/.config"
 TIMESTAMP="$(date +%Y-%m-%d_%H-%M-%S)"
 
-echo ":: ---------------------------------------------------"
-echo ":: DOTFILES INSTALLER - RAGA (FINAL V5)"
-echo ":: Source: $REPO_DIR"
-echo ":: Target: $CONFIG_DIR"
-echo ":: Time:   $TIMESTAMP"
-echo ":: ---------------------------------------------------"
+# --- 🎬 VISUAL FX FUNCTIONS ---
 
-# Ensure .config exists
-mkdir -p "$CONFIG_DIR"
+# 1. Smooth Spinner Animation
+spinner() {
+    local pid=$1
+    local delay=0.08
+    local spinstr='⣾⣽⣻⢿⡿⣟⣯⣷'
+    echo -ne "  "
+    while kill -0 $pid 2>/dev/null; do
+        local temp=${spinstr#?}
+        printf "${PURPLE}%c${NC}" "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b"
+    done
+    printf " \b\b"
+}
 
-# ==============================================================================
-# 1. FUNCTION: REPLACE FULL FOLDER (Fastfetch & Waybar)
-# Logic: Backups INSIDE folder | Max 2 Backups
-# ==============================================================================
-replace_folder() {
-    FOLDER_NAME=$1
-    echo ":: Processing $FOLDER_NAME..."
+# 2. Fake Progress Bar
+progress_bar() {
+    echo -ne "  ${CYAN}[${NC}"
+    for i in {1..20}; do
+        echo -ne "${CYAN}▓${NC}"
+        sleep 0.02
+    done
+    echo -e "${CYAN}]${NC} ${GREEN}100%${NC}"
+}
 
-    TARGET="$CONFIG_DIR/$FOLDER_NAME"
-    SOURCE="$REPO_DIR/$FOLDER_NAME"
-    
-    BACKUP_ROOT="$TARGET/${FOLDER_NAME}_backups"
-    NEW_BACKUP_DIR="$BACKUP_ROOT/$TIMESTAMP"
+# 3. The Banner
+show_header() {
+    clear
+    echo -e "${PURPLE}"
+    echo "  ██████╗  ██████╗ ████████╗    ██████╗  █████╗  ██████╗  █████╗ "
+    echo "  ██╔══██╗██╔═══██╗╚══██╔══╝    ██╔══██╗██╔══██╗██╔════╝ ██╔══██╗"
+    echo "  ██║  ██║██║   ██║   ██║       ██████╔╝███████║██║  ███╗███████║"
+    echo "  ██║  ██║██║   ██║   ██║       ██╔══██╗██╔══██║██║   ██║██╔══██║"
+    echo "  ██████╔╝╚██████╔╝   ██║       ██║  ██║██║  ██║╚██████╔╝██║  ██║"
+    echo "  ╚═════╝  ╚═════╝    ╚═╝       ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝"
+    echo -e "${NC}"
+    echo -e "  ${CYAN}:: 🧬 THE ULTIMATE DOTFILES INSTALLER ::${NC}"
+    echo -e "  ${GREY}----------------------------------------${NC}"
+    echo -e "  ⌚ ${WHITE}Time:${NC}   $TIMESTAMP"
+    echo -e "  📂 ${WHITE}Source:${NC} $REPO_DIR"
+    echo -e "  🎯 ${WHITE}Target:${NC} $CONFIG_DIR"
+    echo -e "  ${GREY}----------------------------------------${NC}\n"
+}
 
-    if [ ! -d "$SOURCE" ]; then
-        echo "   [ERROR] Source $SOURCE not found. Skipping."
-        return
-    fi
+# 4. Helpers
+ask() { echo -ne "${YELLOW}🔮 $1 ${WHITE}[y/N]: ${NC}"; }
+success() { echo -e "  ${GREEN}🔥 SUCCESS:${NC} $1"; }
+info() { echo -e "  ${BLUE}🔹 INFO:${NC}    $1"; }
+backup() { echo -e "  ${PURPLE}📦 BACKUP:${NC}  $1"; }
+error() { echo -e "  ${RED}💀 ERROR:${NC}   $1"; }
 
-    if [ ! -d "$TARGET" ]; then mkdir -p "$TARGET"; fi
-    mkdir -p "$BACKUP_ROOT"
-
-    # Collision check
-    if [ -d "$NEW_BACKUP_DIR" ]; then rm -rf "$NEW_BACKUP_DIR"; fi
-    mkdir -p "$NEW_BACKUP_DIR"
-
-    # Backup existing content (excluding backup folder itself)
-    echo "   -> Backing up existing config..."
-    find "$TARGET" -mindepth 1 -maxdepth 1 -not -name "${FOLDER_NAME}_backups" -exec mv {} "$NEW_BACKUP_DIR/" \;
-    echo "   [BACKUP] Saved to: ${FOLDER_NAME}_backups/$TIMESTAMP"
-
-    # Clean up: Max 2 backups
-    echo "   -> Checking backup limit (Max 2)..."
-    (cd "$BACKUP_ROOT" && ls -dt */ 2>/dev/null | tail -n +3 | xargs -I {} rm -rf "{}")
-
-    # Copy new content
-    cp -r "$SOURCE/." "$TARGET/"
-    echo "   [COPY] Installed new $FOLDER_NAME."
-    echo "   [OK] $FOLDER_NAME done."
-    echo ""
+confirm() {
+    ask "$1"
+    read -r response
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then return 0; else return 1; fi
 }
 
 # ==============================================================================
-# 2. FUNCTION: HYPR (Specific Files Only)
-# Logic: Backup specific files | Max 2 Backups
+# 🧩 LOGIC: REPLACE FOLDER (Waybar/Fastfetch)
+# ==============================================================================
+replace_folder() {
+    NAME=$1
+    echo -e "\n${WHITE}:: 🧬 Processing ${CYAN}$NAME${WHITE}...${NC}"
+
+    TARGET="$CONFIG_DIR/$NAME"
+    SOURCE="$REPO_DIR/$NAME"
+    BACKUP_ROOT="$TARGET/${NAME}_backups"
+    NEW_BACKUP_DIR="$BACKUP_ROOT/$TIMESTAMP"
+
+    if [ ! -d "$SOURCE" ]; then error "Source not found!"; return; fi
+
+    mkdir -p "$TARGET" "$BACKUP_ROOT"
+    if [ -d "$NEW_BACKUP_DIR" ]; then rm -rf "$NEW_BACKUP_DIR"; fi
+    mkdir -p "$NEW_BACKUP_DIR"
+
+    # Animation
+    sleep 0.5 & spinner $!
+
+    # 1. Backup
+    find "$TARGET" -mindepth 1 -maxdepth 1 -not -name "${NAME}_backups" -exec mv {} "$NEW_BACKUP_DIR/" \; 2>/dev/null
+    backup "Archived to ${NAME}_backups/..."
+
+    # 2. Cleanup (Max 2)
+    (cd "$BACKUP_ROOT" && ls -dt */ 2>/dev/null | tail -n +3 | xargs -I {} rm -rf "{}")
+
+    # 3. Copy with bar
+    progress_bar
+    cp -r "$SOURCE/." "$TARGET/"
+    success "New $NAME installed successfully."
+}
+
+# ==============================================================================
+# 🧩 LOGIC: HYPR (Files Only)
 # ==============================================================================
 install_hypr() {
-    echo ":: Processing Hypr..."
+    echo -e "\n${WHITE}:: ⚙️  Processing ${CYAN}Hyprland${WHITE}...${NC}"
     TARGET="$CONFIG_DIR/hypr"
     SOURCE="$REPO_DIR/hypr"
     BACKUP_ROOT="$TARGET/backups"
     NEW_BACKUP_DIR="$BACKUP_ROOT/$TIMESTAMP"
 
-    mkdir -p "$TARGET"
-    mkdir -p "$BACKUP_ROOT"
-
+    mkdir -p "$TARGET" "$BACKUP_ROOT"
     if [ -d "$NEW_BACKUP_DIR" ]; then rm -rf "$NEW_BACKUP_DIR"; fi
     mkdir -p "$NEW_BACKUP_DIR"
+
+    sleep 0.5 & spinner $!
 
     FILES=("hyprlock.conf" "looknfeel.conf")
 
     for FILE in "${FILES[@]}"; do
+        # Backup
         if [ -f "$TARGET/$FILE" ]; then
             mv "$TARGET/$FILE" "$NEW_BACKUP_DIR/"
-            echo "   [BACKUP] $FILE moved to backups/$TIMESTAMP"
         fi
+        # Copy
         if [ -f "$SOURCE/$FILE" ]; then
             cp "$SOURCE/$FILE" "$TARGET/$FILE"
-            echo "   [COPY] $FILE installed."
         fi
     done
-
-    # Clean up: Max 2 backups
-    echo "   -> Checking backup limit (Max 2)..."
+    
+    backup "Old configs moved to backups/"
+    
+    # Cleanup (Max 2)
     (cd "$BACKUP_ROOT" && ls -dt */ 2>/dev/null | tail -n +3 | xargs -I {} rm -rf "{}")
-
-    echo "   [OK] Hypr done."
-    echo ""
+    
+    progress_bar
+    success "Updated Hyprland Look & Lock."
 }
 
 # ==============================================================================
-# 3. FUNCTION: OMARCHY (Branding Folder Only)
-# Logic: Backup branding folder | Max 2 Backups
+# 🧩 LOGIC: OMARCHY (Branding)
 # ==============================================================================
 install_omarchy() {
-    echo ":: Processing Omarchy..."
-    
-    PARENT_DIR="$CONFIG_DIR/omarchy"               
-    TARGET_DIR="$PARENT_DIR/branding"              
-    SOURCE_DIR="$REPO_DIR/omarchy/branding"        
-    BACKUP_ROOT="$PARENT_DIR/branding_backups"
+    echo -e "\n${WHITE}:: 🎨 Processing ${CYAN}Screensaver Text${WHITE}...${NC}"
+    PARENT="$CONFIG_DIR/omarchy"
+    TARGET="$PARENT/branding"
+    SOURCE="$REPO_DIR/omarchy/branding"
+    BACKUP_ROOT="$PARENT/branding_backups"
     NEW_BACKUP_DIR="$BACKUP_ROOT/$TIMESTAMP"
 
-    if [ ! -d "$SOURCE_DIR" ]; then
-        echo "   [ERROR] Source '$SOURCE_DIR' not found."
-        return
+    if [ ! -d "$SOURCE" ]; then error "Source missing!"; return; fi
+
+    mkdir -p "$PARENT" "$BACKUP_ROOT"
+    if [ -d "$NEW_BACKUP_DIR" ]; then rm -rf "$NEW_BACKUP_DIR"; fi
+    mkdir -p "$NEW_BACKUP_DIR"
+
+    sleep 0.5 & spinner $!
+
+    if [ -d "$TARGET" ]; then
+        mv "$TARGET" "$NEW_BACKUP_DIR/"
+        backup "Old branding archived."
     fi
 
-    mkdir -p "$PARENT_DIR"
-    mkdir -p "$BACKUP_ROOT"
-
-    if [ -d "$TARGET_DIR" ]; then
-        if [ -d "$NEW_BACKUP_DIR" ]; then rm -rf "$NEW_BACKUP_DIR"; fi
-        mkdir -p "$NEW_BACKUP_DIR"
-        
-        mv "$TARGET_DIR" "$NEW_BACKUP_DIR/"
-        echo "   [BACKUP] Old branding moved to branding_backups/$TIMESTAMP"
-    fi
-
-    # Clean up: Max 2 backups
-    echo "   -> Checking backup limit (Max 2)..."
     (cd "$BACKUP_ROOT" && ls -dt */ 2>/dev/null | tail -n +3 | xargs -I {} rm -rf "{}")
 
-    cp -r "$SOURCE_DIR" "$PARENT_DIR/"
-    
-    echo "   [COPY] New branding folder installed."
-    echo "   [OK] Omarchy done."
-    echo ""
+    progress_bar
+    cp -r "$SOURCE" "$PARENT/"
+    success "DOT_RAGA Screensaver Applied."
 }
 
 # ==============================================================================
-# 4. FUNCTION: STARSHIP (Single File Backup)
-# Logic: Overwrite previous backup file. No folders.
+# 🧩 LOGIC: STARSHIP (Single File)
 # ==============================================================================
 install_starship() {
-    echo ":: Processing Starship..."
+    echo -e "\n${WHITE}:: 🚀 Processing ${CYAN}Starship${WHITE}...${NC}"
     TARGET="$CONFIG_DIR/starship.toml"
     SOURCE="$REPO_DIR/starship/starship.toml"
-    
-    # Single backup file in root of .config
-    BACKUP_FILE="$CONFIG_DIR/starship_backup.toml"
+    BACKUP="$CONFIG_DIR/starship_backup.toml"
 
-    # Backup: Just move the current file to the backup name (Overwrite if exists)
+    sleep 0.5 & spinner $!
+
     if [ -f "$TARGET" ]; then
-        mv "$TARGET" "$BACKUP_FILE"
-        echo "   [BACKUP] Old config saved to: starship_backup.toml"
+        mv "$TARGET" "$BACKUP"
+        backup "Overwrote starship_backup.toml"
     fi
 
-    # Copy new
+    progress_bar
     cp "$SOURCE" "$TARGET"
-    echo "   [COPY] New starship.toml installed."
-    echo "   [OK] Starship done."
-    echo ""
+    success "Starship prompt locked and loaded."
 }
 
+
 # ==============================================================================
-# EXECUTION
+# 🚀 MAIN LOOP
 # ==============================================================================
 
-replace_folder "fastfetch"
-replace_folder "waybar"
-install_hypr
-install_omarchy
-install_starship
+show_header
 
-echo ":: ---------------------------------------------------"
-echo ":: SUCCESS! All dotfiles installed."
-echo ":: ---------------------------------------------------"
+# 1. Waybar
+if confirm "Install DOT_RAGA Waybar Config?"; then
+    replace_folder "waybar"
+else
+    echo -e "  ${GREY}✖ Skipped Waybar.${NC}"
+fi
+
+# 2. Fastfetch
+if confirm "Install DOT_RAGA Fastfetch?"; then
+    replace_folder "fastfetch"
+else
+    echo -e "  ${GREY}✖ Skipped Fastfetch.${NC}"
+fi
+
+# 3. Hypr
+if confirm "Update Hyprland (Lock & Look)?"; then
+    install_hypr
+else
+    echo -e "  ${GREY}✖ Skipped Hyprland.${NC}"
+fi
+
+# 4. Omarchy
+if confirm "Apply Custom Screensaver Text Effect?"; then
+    install_omarchy
+else
+    echo -e "  ${GREY}✖ Skipped Screensaver.${NC}"
+fi
+
+# 5. Starship
+if confirm "Install Starship Shell Prompt?"; then
+    install_starship
+else
+    echo -e "  ${GREY}✖ Skipped Starship.${NC}"
+fi
+
+echo ""
+echo -e "${GREEN}===========================================${NC}"
+echo -e "${GREEN} 🛸  DOT_RAGA INSTALLATION COMPLETE!  🛸 ${NC}"
+echo -e "${GREEN}===========================================${NC}"
+echo ""
