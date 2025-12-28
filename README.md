@@ -4,7 +4,7 @@
 ![Platform: Omarchy](https://img.shields.io/badge/platform-Omarchy-purple?style=flat&logo=archlinux)
 ![Last commit](https://img.shields.io/github/last-commit/Maho0Raga/dot_raga?style=flat)
 
-The Ultimate Aesthetic Dotfiles Suite — a vibrant, curated configuration collection designed specifically for Omarchy Linux users. DOT_RAGA delivers a polished UI/UX, sensible defaults, and an animated, interactive installer so you can get your desktop looking sharp — fast.
+The Ultimate Aesthetic Dotfiles Suite — a vibrant, curated configuration collection designed specifically for Omarchy Linux users. DOT_RAGA delivers a polished UI/UX, sensible defaults, and an anima[...]
 
 > ⚠️ CRITICAL WARNING  
 > These dotfiles are strictly for **Omarchy Linux**. Using them on other distributions (vanilla Arch, Fedora, etc.) is **not supported** and may break your window manager or desktop environment.
@@ -137,12 +137,14 @@ Please include screenshots or animated previews for visual changes.
 
 This project is built on the shoulders of many excellent projects and maintainers:
 
-- Waybar — base configuration heavily customized for DOT_RAGA (original inspiration: Akshay Gupta)
-- Fastfetch — adapted preset (inspired by LierB)
-- Omarchy Linux — target platform and base ecosystem
+- Waybar — Based on the config by [Akshay Gupta](https://github.com/gupta-akshay/omarchy-waybar-config), heavily customized by me.
+
+- Fastfetch — Based on the config by [LierB](https://github.com/LierB/fastfetch), adapted for DOT_RAGA.
+
+- Base System — Built for the [Omarchy Linux](https://github.com/omarchy) ecosystem.
 
 Made with 🔥 by **Maho0Raga**
 
 ---
 
-If you'd like this README adjusted (shorter, with a different tone, or with more technical detail such as exact file changes the installer makes), tell me how you'd like it styled and I will update it.
+If you'd like this README adjusted (shorter, with a different tone, or with more technical detail such as exact file changes the installer makes), tell me how you'd like it styled and I will update it[...]
