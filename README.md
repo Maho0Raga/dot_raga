@@ -1,4 +1,4 @@
-# DOT_RAGA 🧬✨
+# DOT_RAGA ✨
 
 ![Stars](https://img.shields.io/github/stars/Maho0Raga/dot_raga?style=flat&logo=github)
 ![Platform: Omarchy](https://img.shields.io/badge/platform-Omarchy-blue?style=flat&logo=archlinux)
