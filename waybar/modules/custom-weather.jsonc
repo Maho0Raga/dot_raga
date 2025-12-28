@@ -1,0 +1,10 @@
+{
+  "custom/weather": {
+    "format": "{}°",
+    "tooltip": true,
+    "interval": 300,
+    "exec": "wttrbar --nerd --location \"Oujda\"",
+    "return-type": "json",
+    "on-click": "curl -s 'wttr.in/Oujda?format=3' | xargs -I {} notify-send 'Weather' {}"
+  }
+}
