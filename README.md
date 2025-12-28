@@ -146,5 +146,3 @@ This project is built on the shoulders of many excellent projects and maintainer
 Made with 🔥 by **Maho0Raga**
 
 ---
-
-If you'd like this README adjusted (shorter, with a different tone, or with more technical detail such as exact file changes the installer makes), tell me how you'd like it styled and I will update it[...]
