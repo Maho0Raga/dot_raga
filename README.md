@@ -1,130 +1,148 @@
 # DOT_RAGA 🧬✨
 
 ![Stars](https://img.shields.io/github/stars/Maho0Raga/dot_raga?style=flat&logo=github)
-![Platform: Omarchy](https://img.shields.io/badge/platform-Omarchy-blue?style=flat&logo=archlinux)
+![Platform: Omarchy](https://img.shields.io/badge/platform-Omarchy-purple?style=flat&logo=archlinux)
 ![Last commit](https://img.shields.io/github/last-commit/Maho0Raga/dot_raga?style=flat)
 
-A vibrant, customized dotfiles suite specifically designed for **Omarchy Linux** users. DOT_RAGA brings curated UI/UX, thoughtful defaults, and an animated installer to get your Omarchy desktop looking and feeling sharp — fast.
+The Ultimate Aesthetic Dotfiles Suite — a vibrant, curated configuration collection designed specifically for Omarchy Linux users. DOT_RAGA delivers a polished UI/UX, sensible defaults, and an animated, interactive installer so you can get your desktop looking sharp — fast.
 
-> **⚠️ IMPORTANT:** These dotfiles are strictly for **Omarchy Linux**. Using them on other distributions may break configs, window managers, or desktop environments.
+> ⚠️ CRITICAL WARNING  
+> These dotfiles are strictly for **Omarchy Linux**. Using them on other distributions (vanilla Arch, Fedora, etc.) is **not supported** and may break your window manager or desktop environment.
 
 ---
 
-## 📸 Previews
+## Table of Contents
+- [Visual Tour](#visual-tour)
+- [Quick Install](#quick-install)
+- [Installer (install.sh)](#the-installer-installsh)
+- [Smart Backup Logic](#smart-backup-logic)
+- [Project Structure](#project-structure)
+- [Usage & Recommendations](#usage--recommendations)
+- [Contributing](#contributing)
+- [Credits & Acknowledgments](#credits--acknowledgments)
 
-### 🌌 Desktop & Hyprland
-A seamless visual experience.
+---
+
+## Visual Tour
+
+### Desktop Experience
+The full "Emerald-Neon" visual theme — clean workspaces, integrated theming, and animated touches.
+
 ![General Preview](assets/general_preview_1.png)
 
-### 💻 Waybar
-Custom-crafted status bar with a focus on minimalism and vibrant gradients.
-![Waybar Theme](assets/waybar.png)
+### Waybar (The Raga Bar)
+A heavily customized, gradient-rich status bar.
 
-### 🚀 Fastfetch
-Clean system information display with the unique DOT_RAGA branding.
-![Fastfetch Theme](assets/fastfetch.png)
+![Waybar Preview](assets/waybar.png)  
+Motion Preview: [assets/waybar_1.mp4](assets/waybar_1.mp4)
+
+### Fastfetch
+Custom system fetch display branded for DOT_RAGA.
+
+![Fastfetch Preview](assets/fastfetch.png)  
+Live Demo: [assets/general_preview_2.mp4](assets/general_preview_2.mp4)
 
 ---
 
-## 🚀 Quick Install
+## Quick Install
 
-Run this exact command to install:
+Clone and run the installer (interactive and non-destructive):
 
 ```bash
-git clone [https://github.com/Maho0Raga/dot_raga.git](https://github.com/Maho0Raga/dot_raga.git) && cd dot_raga && chmod +x install.sh && ./install.sh
+git clone https://github.com/Maho0Raga/dot_raga.git
+cd dot_raga
+chmod +x install.sh
+./install.sh
+```
 
 ---
 
-## What is DOT_RAGA? 💻
+## The Installer (install.sh)
 
-DOT_RAGA is a modular dotfiles collection tailored for Omarchy Linux. It focuses on modern aesthetics, usability, and safe deployment. The suite includes polished configurations for Waybar, Fastfetch, Hyprland-related components, and Starship, along with branding and example assets for each module.
+`install.sh` is an interactive installer built to be both safe and stylish.
 
----
+Key features
+- Vibrant UI: Animated spinners, progress bars, and the "Emerald-Neon" aesthetic.
+- Selective install: Choose exactly what to install (Waybar, Fastfetch, Hyprland, Starship, etc.) with simple Yes/No prompts.
+- Safety-first: The script never overwrites existing configs without creating backups.
 
-## install.sh — Interactive & Safe Installer 🚦
-
-The included `install.sh` is an interactive, safe installer that aims to be friendly and non-destructive:
-
-- Theme & UX
-  - Uses a vibrant "Emerald-Neon" color theme throughout prompts and output.
-  - Includes animated spinners and progress indicators for clarity and polish.
-- Selective Installation
-  - Presents an interactive menu so you choose which components to install (Waybar, Fastfetch, Hyprland pieces, Starship, etc.).
-- Smart Backups (Safe by default)
-  - Before replacing any existing configuration, the installer creates backups.
-  - For folders (Waybar, Fastfetch, Hypr) it keeps a maximum of 2 backups to conserve disk space.
-  - For `starship.toml` it maintains a single rotating backup file (keeps one previous version).
-  - Backups are timestamped and stored in a dedicated backups directory inside your home dotfiles backup location.
-- Dry-run & Confirmation steps
-  - Installer confirms actions and shows a summary of changes before writing files.
+What the installer does
+- Detects existing config files/folders.
+- Shows a summary of planned changes before applying them.
+- Creates backups in a structured `_backups` location (see Smart Backup Logic).
 
 ---
 
-## Features ✨
+## Smart Backup Logic
 
-- Polished Waybar configuration tuned for Omarchy.
-- Fastfetch config adapted for stylish system info.
-- Hypr-related configs (lockscreen, theming, look & feel).
-- Starship prompt integration for a snappy terminal experience.
-- Example `assets/` folders for each module (icons, screenshots, sample images) so you can preview and modify visuals easily.
-- Non-destructive: safe backups and selective installs.
-
+- Folders (Waybar, Fastfetch, Hypr): Keeps up to 2 recent backups in a dedicated `_backups` folder to save disk space.
+- Files (Starship): Maintains a single rotating backup file for `starship.toml`.
+- Verification: Installer displays a summary and waits for confirmation before making changes.
 
 ---
 
-## Project Structure — Example File Tree 📁
+## Project Structure
 
-Below is the repository structure and an example `assets/` folder included for each module:
+Each module contains its own assets and configurations.
 
-- waybar/
-  - assets/ (icons, example layouts, screenshots)
-  - config
-- fastfetch/
-  - assets/ (images, example output)
-  - config
-- hypr/
-  - assets/ (wallpapers, lockscreen images)
-  - hyprlock.conf
-  - looknfeel.conf
-- omarchy/
-  - assets/ (branding logos, guidelines)
-  - branding/ (SVGs, readme)
-- starship/
-  - assets/ (prompt samples)
-  - starship.toml
-- install.sh
+dot_raga/
+├── assets/              # Screenshots and preview videos  
+├── fastfetch/           # System fetch configuration  
+├── hypr/                # Hyprland visuals (lockscreen & look & feel)  
+├── omarchy/             # Omarchy-specific branding & screensaver text  
+├── starship/            # Starship shell prompt config  
+├── waybar/              # The Raga status bar config  
+├── install.sh           # Interactive installer  
+└── README.md            # This documentation
 
 ---
 
-## Usage Notes & Recommendations
+## Usage & Recommendations
 
-- Backup first: although the installer makes backups, create any extra snapshots you want before major changes.
-- Only run on Omarchy Linux. This suite uses Omarchy conventions and config paths — other distributions may have different requirements.
-- Review configs before applying if you run a highly customized environment.
+- Backup: Although the installer is careful, we strongly recommend manually backing up your `~/.config` (or the files you care about) before installing new dotfiles.
+- Omarchy Only: Ensure you are running the latest version of Omarchy Linux before installing.
+- Fonts: Install a Nerd Font (for example, JetBrainsMono Nerd Font) so icons render properly.
+- Inspect: You can preview module folders (`waybar/`, `fastfetch/`, `hypr/`) before installing to understand what will be applied.
 
----
-
-## Contributing 🚀
-
-Contributions, fixes, and aesthetic improvements are welcome. Please open issues or PRs on the GitHub repository and include screenshots or examples when proposing visual updates.
-
----
-
-## Credits & Acknowledgments 🙏 (Crucial)
-
-- Waybar: Based on the config by [Akshay Gupta](https://github.com/gupta-akshay/omarchy-waybar-config), heavily customized by me.
-- Fastfetch: Based on the config by [LierB](https://github.com/LierB/fastfetch), adapted for DOT_RAGA.
-- Base System: Built for the [Omarchy Linux](https://github.com/omarchy) ecosystem.
-
-If you use or adapt these configs, please respect original authors' licenses and attribution.
+Example manual backup command:
+```bash
+cp -r ~/.config ~/.config-backup-$(date +%F-%T)
+```
 
 ---
 
+## Customizing
 
-## Support & Contact
-
-For questions, issues, or aesthetic collaboration, open an issue on the repo: [Maho0Raga/dot_raga](https://github.com/Maho0Raga/dot_raga). Include your Omarchy version and a short description of your environment.
+- Select only the modules you want during the interactive installer.
+- Tweak theme colors and fonts in the module directories (for example, `waybar/` or `hypr/`) before running the installer, or edit after install in your home config.
 
 ---
 
-Thank you for checking out DOT_RAGA — a neon-bright toolkit to make your Omarchy desktop sing. 🚀
+## Contributing
+
+Contributions, aesthetic improvements, and bug fixes are welcome!
+
+1. Fork the repository
+2. Create a feature branch:
+   git checkout -b feature/AmazingFeature
+3. Commit your changes:
+   git commit -m "Add some AmazingFeature"
+4. Push your branch and open a Pull Request
+
+Please include screenshots or animated previews for visual changes.
+
+---
+
+## Credits & Acknowledgments
+
+This project is built on the shoulders of many excellent projects and maintainers:
+
+- Waybar — base configuration heavily customized for DOT_RAGA (original inspiration: Akshay Gupta)
+- Fastfetch — adapted preset (inspired by LierB)
+- Omarchy Linux — target platform and base ecosystem
+
+Made with 🔥 by **Maho0Raga**
+
+---
+
+If you'd like this README adjusted (shorter, with a different tone, or with more technical detail such as exact file changes the installer makes), tell me how you'd like it styled and I will update it.
